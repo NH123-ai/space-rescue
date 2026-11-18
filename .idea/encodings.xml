@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <!-- 强制整个工程按 UTF-8 读写：源码里有中文，若 CLion 用 GBK 解析
+       会出现“编辑器里乱码 + 保存后编译报 stray '\' 之类错误”。 -->
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

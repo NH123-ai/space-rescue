@@ -1,0 +1,8 @@
+# Netlify 配置：直接发布 web/ 目录（纯静态，无需构建）
+[build]
+  publish = "web"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=600"

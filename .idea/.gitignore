@@ -1,0 +1,7 @@
+# CLion workspace（个人本地设置），不入库
+workspace.xml
+usage.statistics.xml
+shelf/
+misc.xml.bak
+# 构建产物
+/cmake-build-*/

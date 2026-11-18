@@ -1,0 +1,57 @@
+# GitHub Pages：推送 main 分支后自动把 web/ 发布成静态站点
+#   访问地址：https://<你的用户名>.github.io/<仓库名>/
+#   场景：?trace=standard|tight|cluster|wide|random|max
+#
+#   数据来源自动二选一（与 tools/build_site.bat 同一套逻辑）：
+#     · 队友 A/B/D 的模块已就绪 → 用正式程序生成（界面显示“数据：正式模块”）
+#     · 还没就绪（编不过）      → 用视觉模块测试台生成（界面显示“数据：测试桩”）
+name: Deploy demo to GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 gcc
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq gcc >/dev/null
+
+      - name: 生成站点数据（正式模块优先，失败则退回测试台）
+        run: |
+          set -e
+          if gcc -std=c99 -O2 -o _site main.c data_module.c algorithm_module.c viz_module.c -lm 2>/tmp/err.txt; then
+            echo "✓ 正式模块编译成功，使用 space_rescue --trace-all"
+            ./_site --trace-all web/traces
+          else
+            echo "⚠ 正式模块暂不可用（队友代码未就绪），改用测试台数据："
+            tail -n 8 /tmp/err.txt || true
+            gcc -std=c99 -O1 -I. -Iviz_test -o viz_test/viz_test.exe \
+                viz_test/viz_test.c viz_test/mock_data.c viz_module.c
+            viz_test/viz_test.exe --emit-all web/traces
+          fi
+          echo "--- 产物 ---"
+          ls -1 web/traces
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,37 @@
+# ---- 构建产物（不要进仓库：由 CI 或本地重新生成）----
+cmake-build-*/
+build/
+*.obj
+*.o
+*.a
+*.exe
+*.dll
+*.pdb
+*.ilk
+out/
+viz_test/out/
+_site_build.exe
+_probe*
+_site
+*.log
+*.aux
+*.toc
+
+# ---- 运行时临时文件 ----
+_dom*.txt
+_d*.txt
+_chk*.txt
+_g*.txt
+*.tmp
+
+# ---- Python ----
+__pycache__/
+*.pyc
+
+# ---- 编辑器/系统 ----
+.vscode/
+*.swp
+Thumbs.db
+desktop.ini
+
+# 说明：web/traces/ 要进仓库（站点数据，CI 与本地都用它；体积很小）
