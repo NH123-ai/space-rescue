@@ -138,7 +138,10 @@ tools\build_site.bat      :: 自动：正式模块能编过就用它，否则退
 
 > 目前线上跑的是测试桩数据：方案名都带“（测试桩）”后缀，不会冒充真实算法；
 > 队友交付后重跑一次 `tools\build_site.bat` 即自动切到正式数据，
+> 再 `commit + push` 就上线（CI 只发布已提交的 `web/`，不在云端编译 C），
 > 具体步骤与验收清单见 `docs/接入队友模块.md`。
+
+**线上地址（已部署）**：<https://nh123-ai.github.io/space-rescue/>
 
 然后三选一：
 
