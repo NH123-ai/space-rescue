@@ -2,7 +2,7 @@
 rem ===========================================================================
 rem  视觉模块独立测试 —— 构建脚本
 rem      build_test.bat           只编译“视觉模块 + 假数据”（推荐，隔离调试）
-rem      build_test.bat full      额外链接真实的 data_module.c / algorithm_module.c
+rem      build_test.bat full      额外链接队友真实的模块（teammate/ 下的 A、B 与适配层）
 rem  产物：viz_test.exe
 rem ===========================================================================
 chcp 65001 >nul 2>nul
@@ -13,7 +13,7 @@ set GCC=gcc
 if exist "D:\tools\mingw64\bin\gcc.exe" set GCC=D:\tools\mingw64\bin\gcc.exe
 if "%GCC%"=="gcc" if exist "C:\mingw64\bin\gcc.exe" set GCC=C:\mingw64\bin\gcc.exe
 
-set CFLAGS=-std=c99 -O1 -Wall -Wextra -I..
+set CFLAGS=-std=c99 -O1 -Wall -Wextra -I.. -I../teammate
 set VIZ=..\viz_module.c
 
 echo [1/2] 编译器：%GCC%
@@ -27,9 +27,9 @@ echo 构建成功：viz_test.exe
 goto hint
 
 :build_full
-echo [2/2] 模式：连真实模块（viz_module.c + data_module.c + algorithm_module.c）
+echo [2/2] 模式：连队友真实模块（viz_module.c + teammate 的 A/B + 适配层）
 "%GCC%" %CFLAGS% -DMOCK_WITH_REAL_MODULES -o viz_test_full.exe ^
-    viz_test.c mock_data.c %VIZ% ..\data_module.c ..\algorithm_module.c
+    viz_test.c mock_data.c %VIZ% ..\teammate\data_module_a.c ..\teammate\algorithm_module_b.c ..\teammate\plan_adapter.c
 if errorlevel 1 goto fail
 echo 构建成功：viz_test_full.exe
 goto hint

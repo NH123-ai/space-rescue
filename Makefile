@@ -11,9 +11,9 @@
 # ============================================================================
 
 CC      ?= gcc
-CFLAGS  ?= -std=c99 -O2 -Wall -Wextra
+CFLAGS  ?= -std=c99 -O2 -Wall -Wextra -I. -Iteammate
 LDLIBS  ?= -lm
-SRCS     = main.c data_module.c algorithm_module.c viz_module.c
+SRCS     = main.c teammate/data_module_a.c teammate/algorithm_module_b.c teammate/plan_adapter.c viz_module.c
 OBJS     = $(SRCS:.c=.o)
 TARGET   = space_rescue
 

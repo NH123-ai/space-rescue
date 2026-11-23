@@ -22,9 +22,9 @@ viz_test.exe: $(BASE) viz_assert.h mock_data.h
 
 full: viz_test_full.exe
 
-viz_test_full.exe: $(BASE) ../data_module.c ../algorithm_module.c
+viz_test_full.exe: $(BASE) ../teammate/data_module_a.c ../teammate/algorithm_module_b.c ../teammate/plan_adapter.c
 	$(CC) $(CFLAGS) -DMOCK_WITH_REAL_MODULES -o $@ $(BASE) \
-	      ../data_module.c ../algorithm_module.c
+	      ../teammate/data_module_a.c ../teammate/algorithm_module_b.c ../teammate/plan_adapter.c
 
 run: viz_test.exe
 	./viz_test.exe

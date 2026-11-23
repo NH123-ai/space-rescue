@@ -45,13 +45,25 @@ if(WIN32)
 endif()
 
 # ---------------------------------------------------------------------------
+#  团队模块（队友 A 的数据模块 + 队友 B 的算法模块 + 适配层）
+#    原件见 teammate/original/（未改动）；工程里编译的是集成后的版本，
+#    改动处都在源码里用【集成调整】标注。
+# ---------------------------------------------------------------------------
+set(TEAM_SOURCES
+    teammate/data_module_a.c
+    teammate/algorithm_module_b.c
+    teammate/plan_adapter.c
+)
+set(TEAM_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/teammate)
+
+# ---------------------------------------------------------------------------
 #  正式程序（组员 A + B + C + D）
 # ---------------------------------------------------------------------------
 add_executable(space_rescue
     main.c
-    data_module.c
-    algorithm_module.c
+    ${TEAM_SOURCES}
 )
+target_include_directories(space_rescue PRIVATE ${TEAM_INCLUDES})
 target_link_libraries(space_rescue PRIVATE viz_module)
 
 # 数学库：Linux 下需要显式链接，MinGW/MSVC 下为空
@@ -73,18 +85,18 @@ target_include_directories(viz_test PRIVATE
 target_link_libraries(viz_test PRIVATE viz_module)
 
 # ---------------------------------------------------------------------------
-#  测试台 · 联调模式（额外链接真实的数据 / 算法模块）
+#  测试台 · 联调模式（额外链接队友的真实数据 / 算法模块 + 适配层）
 #    用宏关掉 mock_data.c 里与真实模块重名的替身函数
 # ---------------------------------------------------------------------------
 add_executable(viz_test_full
     viz_test/viz_test.c
     viz_test/mock_data.c
-    data_module.c
-    algorithm_module.c
+    ${TEAM_SOURCES}
 )
 target_include_directories(viz_test_full PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/viz_test
+    ${TEAM_INCLUDES}
 )
 target_compile_definitions(viz_test_full PRIVATE MOCK_WITH_REAL_MODULES)
 target_link_libraries(viz_test_full PRIVATE viz_module)

@@ -101,6 +101,8 @@ void   update_target_pos(Target *tg, double delta_t);
 void   gen_scenario(RescueData *rd, int count, int scenario, unsigned seed);
 void   reset_target_states(RescueData *rd);
 void   target_pos_at(const Target *tg, double t, double *px, double *py, double *pz);
+/* v3 追加：队友 A 原始“随机抖动”漂移模型，保留作对照（主流程用匀速漂移） */
+void   update_target_pos_random(Target *tg, double dt);
 
 /*============================================================================
  *  组员 B：核心算法模块  algorithm_module.c
@@ -118,6 +120,8 @@ void plan_apply(RescueData *rd, const RoutePlan *plan);
 void plan_name(int algo, char *buf, int bufsz);
 /* 对给定顺序做一次完整仿真，返回统计（供算法模块与可视化共用） */
 void plan_simulate(RescueData *rd, const int seq[], int len, RoutePlan *out);
+/* v3 追加：队友 B 全排列回溯的搜索节点计数（用于算法效率对比） */
+long tsp_last_nodes(void);
 
 /*============================================================================
  *  组员 C：可视化演示模块  viz_module.c

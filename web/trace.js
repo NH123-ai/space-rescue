@@ -3,7 +3,7 @@
 window.RESCUE_TRACE = {
   "meta": {
     "title": "太空救援任务 · 最优救援序列可视化",
-    "generated": "2026-11-18 19:41:18",
+    "generated": "2026-11-23 14:36:49",
     "scenario": 0,
     "scenarioName": "标准场景",
     "seed": 2026,
@@ -12,6 +12,7 @@ window.RESCUE_TRACE = {
     "updateInterval": 5.000,
     "maxTargets": 12,
     "origin": [0.000, 0.000, 0.000],
+    "dataSource": "full",
     "selectedPlan": 0
   },
   "targets": [
@@ -38,7 +39,7 @@ window.RESCUE_TRACE = {
     {
       "id": 0, "algo": 0, "name": "最近邻贪心 NN",
       "saved": 9, "dead": 0, "feasible": 1,
-      "length": 955.810, "finish": 95.581, "nodes": 45, "elapsedMs": 0.000,
+      "length": 955.810, "finish": 95.581, "nodes": 81, "elapsedMs": 0.004,
       "route": [7, 3, 4, 1, 5, 8, 2, 6, 0],
       "legs": [{ "from": -1, "to": 7, "t0": 0.000, "t1": 8.670, "dist": 86.704 }, { "from": 7, "to": 3, "t0": 8.670, "t1": 18.332, "dist": 96.618 }, { "from": 3, "to": 4, "t0": 18.332, "t1": 34.484, "dist": 161.516 }, { "from": 4, "to": 1, "t0": 34.484, "t1": 45.369, "dist": 108.849 }, { "from": 1, "to": 5, "t0": 45.369, "t1": 59.634, "dist": 142.654 }, { "from": 5, "to": 8, "t0": 59.634, "t1": 72.253, "dist": 126.192 }, { "from": 8, "to": 2, "t0": 72.253, "t1": 77.056, "dist": 48.032 }, { "from": 2, "to": 6, "t0": 77.056, "t1": 85.133, "dist": 80.765 }, { "from": 6, "to": 0, "t0": 85.133, "t1": 95.581, "dist": 104.482 }],
       "outcome": [{ "id": 0, "state": "saved", "t": 95.581 }, { "id": 1, "state": "saved", "t": 45.369 }, { "id": 2, "state": "saved", "t": 77.056 }, { "id": 3, "state": "saved", "t": 18.332 }, { "id": 4, "state": "saved", "t": 34.484 }, { "id": 5, "state": "saved", "t": 59.634 }, { "id": 6, "state": "saved", "t": 85.133 }, { "id": 7, "state": "saved", "t": 8.670 }, { "id": 8, "state": "saved", "t": 72.253 }]
@@ -46,7 +47,7 @@ window.RESCUE_TRACE = {
     {
       "id": 1, "algo": 1, "name": "生存时间优先 EDF",
       "saved": 9, "dead": 0, "feasible": 1,
-      "length": 1746.629, "finish": 174.663, "nodes": 45, "elapsedMs": 0.000,
+      "length": 1746.629, "finish": 174.663, "nodes": 45, "elapsedMs": 0.002,
       "route": [8, 0, 4, 5, 6, 1, 3, 2, 7],
       "legs": [{ "from": -1, "to": 8, "t0": 0.000, "t1": 8.972, "dist": 89.724 }, { "from": 8, "to": 0, "t0": 8.972, "t1": 20.928, "dist": 119.555 }, { "from": 0, "to": 4, "t0": 20.928, "t1": 43.352, "dist": 224.243 }, { "from": 4, "to": 5, "t0": 43.352, "t1": 63.825, "dist": 204.725 }, { "from": 5, "to": 6, "t0": 63.825, "t1": 82.670, "dist": 188.449 }, { "from": 6, "to": 1, "t0": 82.670, "t1": 104.421, "dist": 217.516 }, { "from": 1, "to": 3, "t0": 104.421, "t1": 131.034, "dist": 266.125 }, { "from": 3, "to": 2, "t0": 131.034, "t1": 157.647, "dist": 266.132 }, { "from": 2, "to": 7, "t0": 157.647, "t1": 174.663, "dist": 170.160 }],
       "outcome": [{ "id": 0, "state": "saved", "t": 20.928 }, { "id": 1, "state": "saved", "t": 104.421 }, { "id": 2, "state": "saved", "t": 157.647 }, { "id": 3, "state": "saved", "t": 131.034 }, { "id": 4, "state": "saved", "t": 43.352 }, { "id": 5, "state": "saved", "t": 63.825 }, { "id": 6, "state": "saved", "t": 82.670 }, { "id": 7, "state": "saved", "t": 174.663 }, { "id": 8, "state": "saved", "t": 8.972 }]
@@ -54,7 +55,7 @@ window.RESCUE_TRACE = {
     {
       "id": 2, "algo": 3, "name": "2-opt 局部搜索",
       "saved": 9, "dead": 0, "feasible": 1,
-      "length": 955.810, "finish": 95.581, "nodes": 126, "elapsedMs": 0.019,
+      "length": 955.810, "finish": 95.581, "nodes": 162, "elapsedMs": 0.020,
       "route": [7, 3, 4, 1, 5, 8, 2, 6, 0],
       "legs": [{ "from": -1, "to": 7, "t0": 0.000, "t1": 8.670, "dist": 86.704 }, { "from": 7, "to": 3, "t0": 8.670, "t1": 18.332, "dist": 96.618 }, { "from": 3, "to": 4, "t0": 18.332, "t1": 34.484, "dist": 161.516 }, { "from": 4, "to": 1, "t0": 34.484, "t1": 45.369, "dist": 108.849 }, { "from": 1, "to": 5, "t0": 45.369, "t1": 59.634, "dist": 142.654 }, { "from": 5, "to": 8, "t0": 59.634, "t1": 72.253, "dist": 126.192 }, { "from": 8, "to": 2, "t0": 72.253, "t1": 77.056, "dist": 48.032 }, { "from": 2, "to": 6, "t0": 77.056, "t1": 85.133, "dist": 80.765 }, { "from": 6, "to": 0, "t0": 85.133, "t1": 95.581, "dist": 104.482 }],
       "outcome": [{ "id": 0, "state": "saved", "t": 95.581 }, { "id": 1, "state": "saved", "t": 45.369 }, { "id": 2, "state": "saved", "t": 77.056 }, { "id": 3, "state": "saved", "t": 18.332 }, { "id": 4, "state": "saved", "t": 34.484 }, { "id": 5, "state": "saved", "t": 59.634 }, { "id": 6, "state": "saved", "t": 85.133 }, { "id": 7, "state": "saved", "t": 8.670 }, { "id": 8, "state": "saved", "t": 72.253 }]
@@ -62,7 +63,7 @@ window.RESCUE_TRACE = {
     {
       "id": 3, "algo": 2, "name": "回溯搜索 (剪枝)",
       "saved": 9, "dead": 0, "feasible": 1,
-      "length": 955.810, "finish": 95.581, "nodes": 62284, "elapsedMs": 8.398,
+      "length": 955.810, "finish": 95.581, "nodes": 986410, "elapsedMs": 189.166,
       "route": [7, 3, 4, 1, 5, 8, 2, 6, 0],
       "legs": [{ "from": -1, "to": 7, "t0": 0.000, "t1": 8.670, "dist": 86.704 }, { "from": 7, "to": 3, "t0": 8.670, "t1": 18.332, "dist": 96.618 }, { "from": 3, "to": 4, "t0": 18.332, "t1": 34.484, "dist": 161.516 }, { "from": 4, "to": 1, "t0": 34.484, "t1": 45.369, "dist": 108.849 }, { "from": 1, "to": 5, "t0": 45.369, "t1": 59.634, "dist": 142.654 }, { "from": 5, "to": 8, "t0": 59.634, "t1": 72.253, "dist": 126.192 }, { "from": 8, "to": 2, "t0": 72.253, "t1": 77.056, "dist": 48.032 }, { "from": 2, "to": 6, "t0": 77.056, "t1": 85.133, "dist": 80.765 }, { "from": 6, "to": 0, "t0": 85.133, "t1": 95.581, "dist": 104.482 }],
       "outcome": [{ "id": 0, "state": "saved", "t": 95.581 }, { "id": 1, "state": "saved", "t": 45.369 }, { "id": 2, "state": "saved", "t": 77.056 }, { "id": 3, "state": "saved", "t": 18.332 }, { "id": 4, "state": "saved", "t": 34.484 }, { "id": 5, "state": "saved", "t": 59.634 }, { "id": 6, "state": "saved", "t": 85.133 }, { "id": 7, "state": "saved", "t": 8.670 }, { "id": 8, "state": "saved", "t": 72.253 }]

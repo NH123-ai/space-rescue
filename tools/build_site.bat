@@ -3,16 +3,15 @@ rem ===========================================================================
 rem  生成“公开演示站”的数据（web\traces\）
 rem
 rem  自动选择数据来源：
-rem    1) 若队友 A/B/D 的模块已就绪（能编出 space_rescue.exe）→ 用正式模块
-rem       space_rescue.exe --trace-all web\traces        （数据标记 dataSource=full）
-rem    2) 若还编不出来（队友代码没写完）→ 退回测试台
-rem       viz_test.exe --emit-all web\traces             （数据标记 dataSource=mock）
+rem    1) 队友 A/B/D 的模块能编过        → 用正式程序：space_rescue.exe --trace-all
+rem                                         （数据标记 dataSource=full，界面显示“正式模块”）
+rem    2) 还编不过（比如队友还没交付完） → 退回测试台：viz_test.exe --emit-all
+rem                                         （数据标记 dataSource=mock，界面显示“测试桩”）
 rem
-rem  两种模式的产物格式完全一致（catalog.js + <key>/trace.js），
-rem  前端不用改一行；界面上会显示“数据：正式模块 / 测试桩”。
+rem  两种模式的产物格式完全一致（catalog.js + <key>/trace.js），前端不用改。
 rem
 rem  用法： tools\build_site.bat            自动选择
-rem         tools\build_site.bat full       强制用正式模块（失败就报错）
+rem         tools\build_site.bat full       强制用正式模块（编不过就报错）
 rem         tools\build_site.bat mock       强制用测试台数据
 rem ===========================================================================
 chcp 65001 >nul 2>nul
@@ -26,6 +25,7 @@ if not defined GCC set GCC=gcc
 
 set OUT=web\traces
 set MODE=%1
+set SRC_MAIN=main.c teammate\data_module_a.c teammate\algorithm_module_b.c teammate\plan_adapter.c viz_module.c
 
 echo ============================================================
 echo  生成站点数据   编译器：%GCC%
@@ -33,9 +33,9 @@ echo ============================================================
 
 if /i "%MODE%"=="mock" goto build_mock
 
-:: ---------- 先试正式模块 ----------
+:: ---------- 先试正式模块（队友 A/B/D + 适配层）----------
 echo [1/2] 尝试编译正式程序（space_rescue）...
-"%GCC%" -std=c99 -O2 -w -o _site_build.exe main.c data_module.c algorithm_module.c viz_module.c -lm >nul 2>nul
+"%GCC%" -std=c99 -O2 -w -I. -Iteammate -o _site_build.exe %SRC_MAIN% -lm >nul 2>nul
 if errorlevel 1 goto full_failed
 
 echo [2/2] 用正式模块生成站点数据...
@@ -50,23 +50,22 @@ goto done
 del _site_build.exe >nul 2>nul
 if /i "%MODE%"=="full" goto force_full_fail
 echo.
-echo [提示] 正式模块还编不过（队友 A/B/D 的代码可能没写完），改用测试台数据。
+echo [提示] 正式模块还编不过（队友 A/B/D 的代码可能没交付完），改用测试台数据。
 
 :build_mock
 echo 编译测试台（viz_test）...
 "%GCC%" -std=c99 -O1 -w -I. -Iviz_test -o viz_test\viz_test.exe viz_test\viz_test.c viz_test\mock_data.c viz_module.c
 if errorlevel 1 goto mock_failed
-if /i "%MODE%"=="mock" set OUT2=%OUT%
 echo 用测试桩生成站点数据...
 viz_test\viz_test.exe --emit-all "%OUT%"
 if errorlevel 1 goto mock_failed
 echo.
-echo 完成：数据来自【测试台 (mock)】（界面显示“数据：测试桩（等队友模块接入）”）
-echo 队友代码就绪后，重新运行 tools\build_site.bat 即会自动切到正式模块。
+echo 完成：数据来自【测试台 (mock)】（界面显示“数据：测试桩”）
+echo 队友代码交付后，重新运行 tools\build_site.bat 会自动切到正式模块。
 goto done
 
 :force_full_fail
-echo [错误] 你要求强制使用正式模块，但编译失败。请检查 main.c / data_module.c / algorithm_module.c。
+echo [错误] 你要求强制使用正式模块，但编译失败。请检查 main.c 与 teammate\ 下的文件。
 exit /b 1
 
 :mock_failed
@@ -75,6 +74,6 @@ exit /b 1
 
 :done
 echo.
-echo 预览：python -m http.server 在 web\ 下启动，或直接双击 web\index.html
-echo 部署：docs\部署上线.md（GitHub Pages / Vercel / Netlify）
+echo 自检：node tools\check_site.js web
+echo 预览：在 web\ 下 python -m http.server，或直接双击 web\index.html
 exit /b 0

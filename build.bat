@@ -5,11 +5,12 @@ rem      build.bat           编译控制台 + Web 演示
 rem      build.bat easyx     额外尝试编译 EasyX 图形版（需已安装 EasyX）
 rem  说明：本文件为 UTF-8 编码，首行 chcp 65001 保证中文提示正常显示。
 rem ===========================================================================
-chcp 65001 >nul 2>nul
+chcp 65001 >nul 2>nul
 cd /d "%~dp0"
 setlocal enabledelayedexpansion
 
-set SRC=main.c data_module.c algorithm_module.c viz_module.c
+set SRC=main.c teammate\data_module_a.c teammate\algorithm_module_b.c teammate\plan_adapter.c viz_module.c
+set INC=-I. -Iteammate
 set OUT=space_rescue.exe
 set GCC=gcc
 
@@ -17,7 +18,7 @@ if exist "D:\tools\mingw64\bin\gcc.exe" set GCC=D:\tools\mingw64\bin\gcc.exe
 if "%GCC%"=="gcc" if exist "C:\mingw64\bin\gcc.exe" set GCC=C:\mingw64\bin\gcc.exe
 
 echo [1/3] 编译器：%GCC%
-"%GCC%" -O2 -Wall -Wextra -std=c99 -o %OUT% %SRC% -lm
+"%GCC%" -O2 -Wall -Wextra -std=c99 %INC% -o %OUT% %SRC% -lm
 if errorlevel 1 goto compile_fail
 echo [2/3] 编译成功：%OUT%
 goto after_build
@@ -30,7 +31,7 @@ exit /b 1
 :after_build
 if /i not "%1"=="easyx" goto hint
 echo [3/3] 尝试编译 EasyX 图形版（需要本机已安装 EasyX）...
-"%GCC%" -O2 -DEASYX -o space_rescue_easyx.exe %SRC% viz_easyx_optional.c -lm -lgraphics -lgdi32 -lwinmm -lole32 -luuid
+"%GCC%" -O2 -DEASYX %INC% -o space_rescue_easyx.exe %SRC% viz_easyx_optional.c -lm -lgraphics -lgdi32 -lwinmm -lole32 -luuid
 if errorlevel 1 echo [提示] EasyX 版编译失败（多为未安装 EasyX）；不影响 Web 演示。
 if not errorlevel 1 echo [3/3] EasyX 版编译成功：space_rescue_easyx.exe
 goto hint
