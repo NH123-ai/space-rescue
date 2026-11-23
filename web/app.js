@@ -1221,7 +1221,6 @@
   }
 
   $('btnReset').addEventListener('click', resetAll);
-  $('btnResetTop').addEventListener('click', resetAll);
   document.querySelectorAll('#speedGroup button').forEach(function (b) {
     b.addEventListener('click', function () {
       document.querySelectorAll('#speedGroup button').forEach(function (x) { x.classList.remove('active'); });
@@ -1383,6 +1382,28 @@
   });
   about.addEventListener('click', function (e) { if (e.target === about) showAbout(false); });
 
+  /* 「随机」：在浏览器里现生成一局（新的位置/漂移速度/生存时间），
+   * 存进 sessionStorage 后带着 ?rand=1 重新加载，时间轴自然回到 0。 */
+  $('btnRandom').addEventListener('click', function () {
+    var tr = null;
+    try {
+      if (!window.RESCUE_RANDOM || !window.RESCUE_RANDOM.buildTrace) {
+        throw new Error('random.js 没加载');
+      }
+      tr = window.RESCUE_RANDOM.buildTrace();
+      sessionStorage.setItem('rescue:rand', JSON.stringify(tr));
+    } catch (e) {
+      toast('随机生成失败：' + (e && e.message ? e.message : e));
+      return;
+    }
+    var u = new URL(location.href);
+    u.searchParams.set('rand', '1');
+    u.searchParams.delete('t');
+    u.searchParams.delete('trace');
+    toast('已生成新场景：' + tr.meta.count + ' 个目标');
+    location.href = u.toString();
+  });
+
   /* toast */
   var toastTimer = null;
   function toast(msg) {
@@ -1411,7 +1432,12 @@
   function fillMeta() {
     var chips = $('metaChips');
     var plan = PLANS[state.planIdx];
-    var isMock = (META.dataSource === 'mock');
+    var ds = META.dataSource;
+    var dsChip = ds === 'mock'
+      ? { k: '数据', v: '测试桩（等队友模块接入）', warn: true }
+      : ds === 'client'
+        ? { k: '数据', v: '本机随机（现场生成）' }
+        : { k: '数据', v: '正式模块' };
     var items = [
       { k: '场景', v: META.scenarioName || ('#' + (META.scenario || 0)) },
       { k: '目标', v: META.count + ' 个' },
@@ -1420,8 +1446,7 @@
       { k: '种子', v: META.seed || 0 },
       { k: '方案', v: plan.name },
       { k: '结果', v: plan.saved + '/' + META.count + ' 获救', warn: !plan.feasible },
-      isMock ? { k: '数据', v: '测试桩（等队友模块接入）', warn: true }
-             : { k: '数据', v: '正式模块' }
+      dsChip
     ];
     chips.innerHTML = items.map(function (it) {
       return '<span class="chip' + (it.warn ? ' warn' : '') + '">' + it.k +
@@ -1446,6 +1471,8 @@
     $('bSource').textContent = 'web/trace.js · 生成于 ' + (META.generated || '—');
     if (META.dataSource === 'mock') {
       $('bSource').textContent = '测试台数据（mock）· 生成于 ' + (META.generated || '—');
+    } else if (META.dataSource === 'client') {
+      $('bSource').textContent = '本机随机生成（浏览器里现算）· ' + (META.generated || '—');
     }
   }
 
@@ -1462,15 +1489,23 @@
       return;
     }
 
-    sel.innerHTML = cat.map(function (c) {
+    var inCatalog = cat.some(function (c) { return c.key === scene.key; });
+    var opts = cat.map(function (c) {
       return '<option value="' + c.key + '"' +
              (c.key === scene.key ? ' selected' : '') + '>' + c.title + '</option>';
     }).join('');
+    /* 本机随机的场景不在清单里，临时插一条在最前面并选中 */
+    if (scene.key && !inCatalog) {
+      opts = '<option value="' + scene.key + '" selected>' +
+             (scene.title || '本机随机场景') + '</option>' + opts;
+    }
+    sel.innerHTML = opts;
 
     sel.addEventListener('change', function () {
       var u = new URL(location.href);
       u.searchParams.set('trace', sel.value);
       u.searchParams.delete('t');             // 换场景后从头播放
+      u.searchParams.delete('rand');          // 离开随机场景，回到目录里的预设
       location.href = u.toString();
     });
 
@@ -1480,9 +1515,13 @@
     }
     var src = $('bSource');
     if (src) {
-      src.textContent = 'traces/' + (scene.key || '') + '/trace.js · 生成于 ' +
-                        (META.generated || '—') +
-                        (META.dataSource === 'mock' ? '（测试桩数据）' : '');
+      if (META.dataSource === 'client') {
+        src.textContent = '本机随机生成（浏览器里现算）· ' + (META.generated || '—');
+      } else {
+        src.textContent = 'traces/' + (scene.key || '') + '/trace.js · 生成于 ' +
+                          (META.generated || '—') +
+                          (META.dataSource === 'mock' ? '（测试桩数据）' : '');
+      }
     }
     var descEl = document.getElementById('bSceneDesc');
     if (descEl && scene.desc) descEl.textContent = scene.desc;

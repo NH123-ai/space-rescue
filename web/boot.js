@@ -69,6 +69,29 @@
     return;
   }
 
+  /* ---- 情况 2：?rand=1 —— 用「随机」按钮现生成的那一局（存在 sessionStorage）---- */
+  if (params.get('rand') === '1') {
+    var raw = null;
+    try { raw = sessionStorage.getItem('rescue:rand'); } catch (e) { raw = null; }
+    if (raw) {
+      try {
+        var tr = JSON.parse(raw);
+        window.RESCUE_TRACE = tr;
+        window.__RESCUE_SCENE = {
+          /* 用和目录里场景不同的 key，避免和清单里的 “random” 预设撞名 */
+          key: 'local-random',
+          title: '本机随机场景',
+          desc: '按「随机」现场生成：位置、漂移速度、生存时间都是新的，时间轴从 0 开始',
+          catalog: window.RESCUE_TRACE_CATALOG || []
+        };
+        loadApp();
+        return;
+      } catch (e2) {
+        /* 解析失败就当没这回事，退回目录里的场景 */
+      }
+    }
+  }
+
   var catalog = window.RESCUE_TRACE_CATALOG || [];
   var file = 'trace.js';            /* 旧部署的兜底 */
   var key = params.get('trace');

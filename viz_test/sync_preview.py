@@ -26,6 +26,7 @@ REPLACEMENTS = [
     ('href="styles.css"', 'href="../web/styles.css"'),
     ('<script src="traces/catalog.js"></script>',
      '<script src="out/trace.js"></script>'),
+    ('<script src="random.js"></script>', '<script src="../web/random.js"></script>'),
     ('<script src="boot.js"></script>', '<script src="../web/boot.js"></script>'),
 ]
 

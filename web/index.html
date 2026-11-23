@@ -46,7 +46,7 @@
   <div class="top-actions">
     <button class="ghost-btn" id="btnBriefing" title="任务简报">简报</button>
     <button class="ghost-btn" id="btnAbout" title="这个项目是做什么的">关于</button>
-    <button class="ghost-btn" id="btnResetTop" title="重置：回到起点、恢复默认视角与推荐方案（R）">重置</button>
+    <button class="ghost-btn" id="btnRandom" title="现场随机生成一局新场景：重新分配位置、漂移速度与生存时间，时间从 0 开始">随机</button>
     <button class="ghost-btn" id="btnShot" title="导出当前画面 PNG">导出 PNG</button>
     <span class="fps" id="fps">-- FPS</span>
   </div>
@@ -276,9 +276,11 @@
 
 <!-- 数据与渲染的加载顺序：
      1) traces/catalog.js —— 场景清单（由 space_rescue.exe --trace-all 生成）
-     2) boot.js           —— 按 ?trace=<key> 载入对应场景数据，再加载 app.js
+     2) random.js         —— 「随机」按钮用：在浏览器里现场生成一局新场景
+     3) boot.js           —— 按 ?trace=<key> / ?rand=1 载入数据，再加载 app.js
      没有 catalog.js 时，boot.js 会退回到同目录的 trace.js（兼容旧部署）。 -->
 <script src="traces/catalog.js"></script>
+<script src="random.js"></script>
 <script src="boot.js"></script>
 </body>
 </html>
