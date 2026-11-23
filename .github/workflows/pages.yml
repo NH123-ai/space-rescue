@@ -21,7 +21,9 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # 不要取消正在进行的部署：gh-pages 的部署是一个“事务”，
+  # 中途被取消会让下一次 deploy-pages 直接失败（我们踩过这个坑）
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -47,5 +49,20 @@ jobs:
         with:
           path: web
 
+      # deploy-pages 偶发失败（常见于上一次部署还没收尾时又推了一次），
+      # 这里允许失败并重试一次，避免因为一次抖动把整条流水线判红。
       - id: deployment
         uses: actions/deploy-pages@v4
+        continue-on-error: true
+        with:
+          timeout: 600000
+
+      - name: 等待 Pages 释放上一次部署
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 25
+
+      - id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
+          timeout: 600000
