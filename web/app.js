@@ -1180,9 +1180,48 @@
     state.playing = !state.playing;
     syncPlayIcon();
   });
-  $('btnReset').addEventListener('click', function () {
-    state.t = 0; state.playing = false; syncPlayIcon();
-  });
+
+  /* 重置：把演示恢复到“刚打开”的状态
+   *   时间归零 + 暂停、速度回 1×、方案回到推荐方案、相机回默认视角、
+   *   关掉“自动环绕/俯视/全部方案航线”这类临时开关、收起遮罩。 */
+  function resetAll() {
+    var defPlan = clamp(META.selectedPlan || 0, 0, PLANS.length - 1);
+
+    state.t = 0;
+    state.playing = false;
+    state.speed = 1;
+    state.hoverT = null;
+    state.autoOrbit = true;
+    state.showAllRoutes = false;
+
+    var base = state.bounds.radius * 3.1;
+    state.cam.yaw = 0.72;
+    state.cam.pitch = 0.40;
+    state.cam.dist = base;
+    VSCALE = 0.40 * Math.min(W, H) * base / state.bounds.radius;
+
+    if (state.planIdx !== defPlan) {
+      state.planIdx = defPlan;
+      buildSeq();
+      buildAlgoList();
+      buildLog();
+    }
+
+    document.querySelectorAll('#speedGroup button').forEach(function (x) {
+      x.classList.toggle('active', parseFloat(x.dataset.speed) === 1);
+    });
+    $('btnOrbit').classList.add('active');
+    $('btnChain').classList.remove('active');
+
+    showBriefing(false);
+    showAbout(false);
+
+    syncPlayIcon();
+    toast('已重置：回到起点 · 1× 速度 · 推荐方案');
+  }
+
+  $('btnReset').addEventListener('click', resetAll);
+  $('btnResetTop').addEventListener('click', resetAll);
   document.querySelectorAll('#speedGroup button').forEach(function (b) {
     b.addEventListener('click', function () {
       document.querySelectorAll('#speedGroup button').forEach(function (x) { x.classList.remove('active'); });
@@ -1269,7 +1308,7 @@
     } else if (e.code === 'ArrowLeft') {
       seek(state.t - 0.5); state.playing = false; syncPlayIcon();
     } else if (e.key === 'r' || e.key === 'R') {
-      state.t = 0; state.playing = false; syncPlayIcon();
+      resetAll();
     } else if (e.key === 'c' || e.key === 'C') {
       state.autoOrbit = !state.autoOrbit;
       $('btnOrbit').classList.toggle('active', state.autoOrbit);
