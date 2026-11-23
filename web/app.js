@@ -1256,10 +1256,8 @@
     if (e.target.tagName === 'INPUT') return;
     if (e.key === 'Escape') {
       /* Esc 先关“关于”，再关“简报” */
-      var ab = $('aboutOverlay');
-      var br = $('overlay');
-      if (ab && !ab.classList.contains('hidden')) { ab.classList.add('hidden'); return; }
-      if (br && !br.classList.contains('hidden')) { br.classList.add('hidden'); }
+      if (about && !about.classList.contains('hidden')) { showAbout(false); return; }
+      if (overlay && !overlay.classList.contains('hidden')) { showBriefing(false); }
       return;
     }
     if (e.code === 'Space') {
@@ -1297,31 +1295,47 @@
     toast('已导出当前画面');
   });
 
-  /* 简报 */
+  /* 两个遮罩：简报 / 关于。同一时间只允许显示一个，避免叠在一起看不清。 */
   var overlay = $('overlay');
-  $('btnBriefing').addEventListener('click', function () { overlay.classList.remove('hidden'); });
-  $('btnCloseBriefing').addEventListener('click', function () { overlay.classList.add('hidden'); });
-  overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.classList.add('hidden'); });
+  var about = $('aboutOverlay');
+
+  function setOverlay(el, show) {
+    if (!el) return;
+    el.classList.toggle('hidden', !show);
+    el.setAttribute('aria-hidden', show ? 'false' : 'true');
+  }
+
+  function showBriefing(show) {
+    setOverlay(overlay, show);
+    if (show) setOverlay(about, false);
+  }
+
+  function showAbout(show) {
+    setOverlay(about, show);
+    if (!show) return;
+    setOverlay(overlay, false);
+    var src = $('aboutSource');
+    if (src) {
+      src.textContent = META.dataSource === 'mock'
+        ? 'C 程序导出（测试桩）'
+        : 'C 程序导出（正式模块）';
+    }
+    var body = about.querySelector('.about-body');
+    if (body) body.scrollTop = 0;
+    var close = $('btnCloseAbout');
+    if (close) close.focus();
+  }
+
+  $('btnBriefing').addEventListener('click', function () { showBriefing(true); });
+  $('btnCloseBriefing').addEventListener('click', function () { showBriefing(false); });
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) showBriefing(false); });
   $('btnStart').addEventListener('click', function () {
-    overlay.classList.add('hidden');
+    showBriefing(false);
     state.t = 0;
     state.playing = true;
     syncPlayIcon();
   });
 
-  /* 项目介绍（关于） */
-  var about = $('aboutOverlay');
-  function showAbout(show) {
-    about.classList.toggle('hidden', !show);
-    if (show) {
-      var src = $('aboutSource');
-      if (src) {
-        src.textContent = META.dataSource === 'mock'
-          ? 'C 程序导出（测试桩）'
-          : 'C 程序导出（正式模块）';
-      }
-    }
-  }
   $('btnAbout').addEventListener('click', function () { showAbout(true); });
   $('btnCloseAbout').addEventListener('click', function () { showAbout(false); });
   $('btnCloseAbout2').addEventListener('click', function () { showAbout(false); });
@@ -1440,6 +1454,7 @@
      *   ?t=42       起始时刻
      *   ?plan=1     起始方案下标
      *   ?brief=0    不显示任务简报遮罩
+     *   ?about=1    直接打开“关于”面板（项目介绍）
      *   ?orbit=0    关闭自动环绕
      *   ?play=1     自动播放 */
     var q = new URLSearchParams(location.search);
@@ -1463,11 +1478,8 @@
     fillMeta();
     setupScenePicker();
     syncPlayIcon();
-    /* ?about=1 直接打开“关于”面板（方便分享“项目介绍”） */
-    if (q.get('about') === '1') {
-      $('aboutOverlay').classList.remove('hidden');
-      overlay.classList.add('hidden');
-    }
+    /* ?about=1 直接打开“关于”面板（方便把“项目介绍”当入口分享出去） */
+    if (q.get('about') === '1') showAbout(true);
     requestAnimationFrame(function (t0) { lastFrame = t0; render(t0); });
   }
 
