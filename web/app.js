@@ -1254,6 +1254,14 @@
   /* 键盘 */
   window.addEventListener('keydown', function (e) {
     if (e.target.tagName === 'INPUT') return;
+    if (e.key === 'Escape') {
+      /* Esc 先关“关于”，再关“简报” */
+      var ab = $('aboutOverlay');
+      var br = $('overlay');
+      if (ab && !ab.classList.contains('hidden')) { ab.classList.add('hidden'); return; }
+      if (br && !br.classList.contains('hidden')) { br.classList.add('hidden'); }
+      return;
+    }
     if (e.code === 'Space') {
       e.preventDefault();
       if (state.t >= state.duration - 1e-6) state.t = 0;
@@ -1300,6 +1308,27 @@
     state.playing = true;
     syncPlayIcon();
   });
+
+  /* 项目介绍（关于） */
+  var about = $('aboutOverlay');
+  function showAbout(show) {
+    about.classList.toggle('hidden', !show);
+    if (show) {
+      var src = $('aboutSource');
+      if (src) {
+        src.textContent = META.dataSource === 'mock'
+          ? 'C 程序导出（测试桩）'
+          : 'C 程序导出（正式模块）';
+      }
+    }
+  }
+  $('btnAbout').addEventListener('click', function () { showAbout(true); });
+  $('btnCloseAbout').addEventListener('click', function () { showAbout(false); });
+  $('btnCloseAbout2').addEventListener('click', function () { showAbout(false); });
+  $('btnAboutRepo').addEventListener('click', function () {
+    window.open('https://github.com/NH123-ai/space-rescue', '_blank', 'noopener');
+  });
+  about.addEventListener('click', function (e) { if (e.target === about) showAbout(false); });
 
   /* toast */
   var toastTimer = null;
@@ -1434,6 +1463,11 @@
     fillMeta();
     setupScenePicker();
     syncPlayIcon();
+    /* ?about=1 直接打开“关于”面板（方便分享“项目介绍”） */
+    if (q.get('about') === '1') {
+      $('aboutOverlay').classList.remove('hidden');
+      overlay.classList.add('hidden');
+    }
     requestAnimationFrame(function (t0) { lastFrame = t0; render(t0); });
   }
 

@@ -52,6 +52,7 @@
 
   <div class="top-actions">
     <button class="ghost-btn" id="btnBriefing" title="任务简报">简报</button>
+    <button class="ghost-btn" id="btnAbout" title="这个项目是做什么的">关于</button>
     <button class="ghost-btn" id="btnShot" title="导出当前画面 PNG">导出 PNG</button>
     <span class="fps" id="fps">-- FPS</span>
   </div>
@@ -203,6 +204,81 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ============================ 项目介绍遮罩 ============================ -->
+<div class="overlay hidden" id="aboutOverlay">
+  <div class="about-panel" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+    <header>
+      <h2 id="aboutTitle">关于这个项目</h2>
+      <button class="close" id="btnCloseAbout" title="关闭（Esc）">×</button>
+    </header>
+
+    <div class="about-body">
+      <p class="lead">
+        这是《软件设计思想与方法》综合程序设计五的作业：<b>太空救援问题</b>。
+        空间里有若干个待救援目标，位置随时间低速漂移，每个目标有最长生存时间；
+        救援队从坐标原点出发，救完不用返回。要解决的是“先救谁、什么时候到”，
+        再把整个救援过程做成能看懂、能回放的演示。
+      </p>
+
+      <h3>页面上看到的数字是怎么来的</h3>
+      <p>
+        救援顺序和各段航程时刻由 C 程序算好，导出成一份 <code>trace.js</code>；
+        这个页面只负责渲染，不做任何求解。所以时间轴可以随便拖、倍速、切换方案，
+        画面永远是同一份数据的不同时刻。
+      </p>
+
+      <h3>四种救援方案</h3>
+      <ul class="about-list">
+        <li><b>最近邻贪心 NN</b>：每次挑离飞船最近的目标，快，但容易把紧迫的目标拖死。</li>
+        <li><b>生存时间优先 EDF</b>：先救生存余量最小的，更贴合题目约束，但航程往往更长。</li>
+        <li><b>2-opt 局部搜索</b>：在贪心解上反转航段做局部改进，质量和耗时的折中。</li>
+        <li><b>回溯搜索</b>：小规模时求最优，规模大了换成带剪枝的版本（节点有上限）。</li>
+      </ul>
+      <p>
+        右侧「算法对比」面板里能看到每种方案的获救数、总航程、搜索节点数和耗时，
+        点一下就会把演示航线换成那一套。
+      </p>
+
+      <h3>两个实现上的细节</h3>
+      <p>
+        飞行时间不是“距离 ÷ 速度”直接算的：目标是动的，飞过去这段时间它也在跑，
+        真正要解的是拦截方程 <code>|p0 + v·τ − ship| = SPEED·τ</code>，展开成一元二次方程取正根。
+        另外整个演示的数据量很小（9 个目标约 6 KB），因为页面不存逐帧坐标，
+        而是按“目标匀速漂移 + 飞船分段匀速”这两条规律自己把画面算出来。
+      </p>
+      <p>
+        渲染是手写的 Canvas 2D 三维投影，没有引 three.js 之类的库，整站断网也能跑。
+      </p>
+
+      <h3>技术信息</h3>
+      <div class="about-facts">
+        <div><span>语言 / 构建</span><b>C99 · CMake（CLion）</b></div>
+        <div><span>前端</span><b>HTML + CSS + 原生 JS，零依赖</b></div>
+        <div><span>数据来源</span><b id="aboutSource">C 程序导出</b></div>
+        <div><span>许可</span><b>MIT</b></div>
+      </div>
+
+      <h3>分工</h3>
+      <p>
+        数据模块 A、算法模块 B、可视化模块 C、主程序与测试 D，接口统一在
+        <code>space_rescue.h</code> 里。
+      </p>
+
+      <h3>相关链接</h3>
+      <p class="about-links">
+        <a href="https://github.com/NH123-ai/space-rescue" target="_blank" rel="noopener">GitHub 仓库（源码 / 文档 / 报告素材）</a>
+        <a href="https://github.com/NH123-ai/space-rescue/blob/main/docs/%E9%83%A8%E7%BD%B2%E4%B8%8A%E7%BA%BF.md" target="_blank" rel="noopener">部署说明</a>
+        <a href="https://github.com/NH123-ai/space-rescue/tree/main/docs/screenshots" target="_blank" rel="noopener">界面截图</a>
+      </p>
+    </div>
+
+    <footer>
+      <button class="ghost-btn" id="btnAboutRepo">打开仓库</button>
+      <button class="primary" id="btnCloseAbout2">继续演示</button>
+    </footer>
+  </div>
+</div>
 
 <!-- 数据与渲染的加载顺序：
      1) traces/catalog.js —— 场景清单（由 space_rescue.exe --trace-all 生成）
